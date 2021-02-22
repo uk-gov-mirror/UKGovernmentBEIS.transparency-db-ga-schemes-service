@@ -1,6 +1,23 @@
 package com.beis.subsidy.ga.schemes.dbpublishingservice.service.impl;
 
-import static com.beis.subsidy.control.accessmanagementservice.utils.JsonFeignResponseUtil.toResponseEntity;
+
+import static com.beis.subsidy.ga.schemes.dbpublishingservice.util.JsonFeignResponseUtil.toResponseEntity;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.beis.subsidy.ga.schemes.dbpublishingservice.controller.feign.GraphAPIFeignClient;
 import com.beis.subsidy.ga.schemes.dbpublishingservice.exception.AccessManagementException;
@@ -17,24 +34,10 @@ import com.beis.subsidy.ga.schemes.dbpublishingservice.response.SearchResults;
 import com.beis.subsidy.ga.schemes.dbpublishingservice.response.UserDetailsResponse;
 import com.beis.subsidy.ga.schemes.dbpublishingservice.service.GrantingAuthorityService;
 import com.beis.subsidy.ga.schemes.dbpublishingservice.util.GrantingAuthSpecificationUtils;
+
 import feign.FeignException;
 import feign.Response;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -64,8 +67,8 @@ public class GrantingAuthorityServiceImpl implements GrantingAuthorityService {
             throw new AccessManagementException(HttpStatus.INTERNAL_SERVER_ERROR, "Create Group id is null");
         }
         GrantingAuthority grantingAuthority = new GrantingAuthority(null, grantingAuthorityRequest.getName(),
-                "SYSTEM", "SYSTEM", "Active", response.getId(),grantingAuthorityRequest.getName(), LocalDate.now(),
-                LocalDate.now());
+                "SYSTEM", "SYSTEM", "Active", response.getId(),grantingAuthorityRequest.getName(), LocalDateTime.now(),
+                LocalDateTime.now());
 
         GrantingAuthority savedAwards = gaRepository.save(grantingAuthority);
         log.info("{}:: End of createGrantingAuthority ", loggingComponentName);
@@ -80,7 +83,7 @@ public class GrantingAuthorityServiceImpl implements GrantingAuthorityService {
 
             //GroupResponse response = addGroup(accessToken, request);
             GrantingAuthority grantingAuthority = new GrantingAuthority(gaNumber, grantingAuthorityRequest.getName(),
-                    "SYSTEM", "SYSTEM", "Active", null, grantingAuthorityRequest.getAz_group_name(),LocalDate.now(), LocalDate.now());
+                    "SYSTEM", "SYSTEM", "Active", null, grantingAuthorityRequest.getAz_group_name(),LocalDateTime.now(), LocalDateTime.now());
 
             GrantingAuthority savedAwards = gaRepository.save(grantingAuthority);
             log.info("{}::End of updateGrantingAuthority", loggingComponentName);
@@ -319,7 +322,7 @@ public class GrantingAuthorityServiceImpl implements GrantingAuthorityService {
                 GrantingAuthority grantingAuthResp= gaRepository.findByAzureGroupId(azGrpId);
                 grantingAuthority = new GrantingAuthority(grantingAuthResp.getGaId(), grantingAuthResp.getGrantingAuthorityName(),
                         "SYSTEM", "SYSTEM", "Inactive", azGrpId,
-                        grantingAuthResp.getAzureGroupName(),LocalDate.now(), LocalDate.now());
+                        grantingAuthResp.getAzureGroupName(),LocalDateTime.now(), LocalDateTime.now());
                 GrantingAuthority savedAwards = gaRepository.save(grantingAuthority);
                 log.info("{}:: GrantingAuthority saved successfully", loggingComponentName);
             }
